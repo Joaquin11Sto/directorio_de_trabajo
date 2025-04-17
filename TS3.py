@@ -23,7 +23,7 @@ def mi_funcion_sen (vmax,dc,ff,ph,N,fs):
 #Datos del ADC
 fs=1000 #Frecuencia de muestreo
 N=1000 #Cantidad de muestras
-f0=1001 #Frecuencia arbitraria
+f0=500 #Frecuencia arbitraria
 tt,xx=mi_funcion_sen(4,0,f0,0,N,fs)
 
 xn=xx/np.std(xx) # Normalizo la señal senoidal

@@ -16,11 +16,11 @@ from scipy.fft import fft, fftshift
 N=1000 # Cantidad de muestras
 R=200 # Realizaciones
 fs=1000 #Frecuecia de muestreo
-a1= 1/np.sqrt(2) #Amplitud de la señal
+a1= np.sqrt(2) #Amplitud de la señal
 df=fs/N #rResolucion espectral
-tt = np.arange(0,1,1/N).reshape((N,1))#Vector de tiempo de columna N
+tt = np.arange(0,1,1/N).reshape((N,1))# Vector de tiempo de columna N
 tt = np.tile(tt, (1, R))
-Pn=1/10 #Potencia de ruido cuantizado con 10 dB
+Pn= 1/10 #Potencia de ruido cuantizado con 10 dB
 
 omega_0=fs/4 # Frecuencia central
 fr=np.random.uniform(-0.5,0.5,size=(1,R)) # Frecuencia aletearia
@@ -31,18 +31,98 @@ xx = a1*np.sin(2*np.pi*omega_1*tt) # Hay que multiplicar por 2pi sino, no queda.
 sigma=np.sqrt(1/10)
 nn= np.random.normal(0,sigma,size=(N,1))
 nn = np.tile(nn, (1, R))
-
+    
 S= xx + nn # Señal de ruido 
 
-S_fft=1/N*np.fft.fft(S,axis=0)
-ff=np.linspace(0, (N-1)*df, N)
-bfrec= ff <= fs/2
-plt.figure()
-for i in range(R):
-    plt.plot(ff[bfrec], 10 * np.log10(2 * np.abs(S_fft[bfrec, i])**2), label=f'Señal {i+1}')
+window_1 = signal.windows.blackmanharris(N)
+window_2=signal.windows.flattop(N)
+window_3= signal.windows.boxcar(N)
 
-plt.xlabel("Frecuencia (Hz)")
-plt.ylabel("Densidad espectral de potencia (dB)")
+win_1=window_1.reshape((N,1))
+win_2=window_2.reshape((N,1))
+win_3=window_3.reshape((N,1))
+
+ventaneo_1 = S*win_1
+ventaneo_2 = S*win_2
+ventaneo_3 = S*win_3
+
+final_fft_1=1/N*np.fft.fft(ventaneo_1,axis=0)
+final_fft_2=1/N*np.fft.fft(ventaneo_2,axis=0)
+final_fft_3=1/N*np.fft.fft(ventaneo_3,axis=0)
+
+final_BMH = np.abs(final_fft_1)
+final_FLT= np.abs(final_fft_2)
+final_BOX = np.abs(final_fft_3)
+
+indice= N//4
+a_gorro_1= final_BMH[indice] # vector para quitar la feta
+a_gorro_2= final_FLT[indice]
+a_gorro_3= final_BOX[indice]
+A_GORRO = np.array([a_gorro_1, a_gorro_2, a_gorro_3])  # También da (3, 200)
+
+#Para calcular el argumento maximo de cada realizacion
+k_1=np.argmax(final_BMH[:N//2, :],axis=0)
+k_2=np.argmax(final_FLT[:N//2, :],axis=0)
+k_3=np.argmax(final_BOX[:N//2, :],axis=0)
+
+
+omega_1_1=k_1*df
+omega_2=k_2*df
+omega_3=k_3*df
+
+
+# Etiquetas para cada conjunto
+labels = ['Blackman-Harris', 'Flattop', 'Boxcar']
+
+
+# Graficar los 3 histogramas superpuestos
+plt.figure(1)
+plt.hist(a_gorro_1, bins=30, label='Blackman-Harris', color='blue', alpha=0.6)
+plt.hist(a_gorro_2, bins=30, label='Flattop', color='green', alpha=0.6)
+plt.hist(a_gorro_3, bins=30, label='Boxcar', color='red', alpha=0.6)
+
+
+plt.title('Histogramas de Magnitud FFT (una por ventana)')
+plt.xlabel('Magnitud')
+plt.ylabel('Frecuencia')
 plt.legend()
 plt.grid(True)
+plt.tight_layout()
 plt.show()
+
+#Calculo el sesgo del maximo de la señal
+esperanza_BHK=np.mean(a_gorro_1)
+esperanza_Flat=np.mean(a_gorro_2)
+esperanza_BOX=np.mean(a_gorro_3)
+
+valor_real = a1
+valor_real_omega = np.mean(omega_1)
+
+sesgo_BHK=esperanza_BHK - valor_real
+sesgo_Flat=esperanza_Flat - valor_real
+sesgo_BOX=esperanza_BOX - valor_real
+
+varianza_BHK=np.var(a_gorro_1)
+varianza_Flat=np.var(a_gorro_2)
+varianza_BOX=np.var(a_gorro_3)
+
+plt.figure(2)
+plt.hist(omega_1_1, bins=30, label='Blackman-Harris', color='purple', alpha=0.6)
+plt.hist(omega_2, bins=30, label='Flattop', color='green', alpha=0.6)
+plt.hist(omega_3, bins=30, label='Boxcar', color='black', alpha=0.6)
+
+plt.title('Histogramas de omega (una por ventana)')
+plt.xlabel('Magnitud')
+plt.ylabel('Frecuencia')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+esperanza_BHK_omega_1= np.mean(omega_1_1)
+esperanza_Flat_omega_2= np.mean(omega_2)
+esperanza_BOX_omega_3= np.mean(omega_3)
+
+sesgo_BHK_omega = esperanza_BHK_omega_1 - valor_real_omega
+sesgo_Flat_omega = esperanza_Flat_omega_2 - valor_real_omega
+sesgo_BOX_omega = esperanza_BOX_omega_3 - valor_real_omega
