@@ -126,3 +126,7 @@ esperanza_BOX_omega_3= np.mean(omega_3)
 sesgo_BHK_omega = esperanza_BHK_omega_1 - valor_real_omega
 sesgo_Flat_omega = esperanza_Flat_omega_2 - valor_real_omega
 sesgo_BOX_omega = esperanza_BOX_omega_3 - valor_real_omega
+
+varianza_omega_1 = np.var(omega_1_1)
+varianza_omega_2 = np.var(omega_2)
+varianza_omega_3 = np.var(omega_3)
