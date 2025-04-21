@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Tue Apr 15 09:50:44 2025
+
+@author: Joaquin
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Thu Apr  3 19:10:07 2025
 
 @author: Joaquin
@@ -11,22 +18,15 @@ import matplotlib as mlt
 from scipy import signal
 from scipy.fft import fft, fftshift
 
-def plot_freq(Xk_fft, ffx,repes, bfrec, title, xlabel, ylabel):
-    for i in range(repes):
-        plt.plot(ffx[bfrec], 10 * np.log10(2 * np.abs(Xk_fft[bfrec, i])**2), alpha=0.5)
-    
-    plt.title(title)
-    plt.xlabel(xlabel)  
-    plt.ylabel(ylabel)
-    plt.grid()
-    
 
  
 N=1000 # Cantidad de muestras
 R=200 # Realizaciones
 fs=1000 #Frecuecia de muestreo
+N2=N*10
 a1= np.sqrt(2) #Amplitud de la señal
-df=fs/N #rResolucion espectral
+df=fs/N 
+df2 = df*1/10#rResolucion espectral
 tt = np.arange(0,1,1/N).reshape((N,1))# Vector de tiempo de columna N
 tt = np.tile(tt, (1, R))
 Pn= 1/10 #Potencia de ruido cuantizado con 10 dB
@@ -55,7 +55,7 @@ ventaneo_1 = S*win_1
 ventaneo_2 = S*win_2
 ventaneo_3 = S*win_3
 
-final_fft_1=1/N*np.fft.fft(ventaneo_1,axis=0)
+final_fft_1=1/N*np.fft.fft(ventaneo_1,n=N2,axis=0)
 final_fft_2=1/N*np.fft.fft(ventaneo_2,axis=0)
 final_fft_3=1/N*np.fft.fft(ventaneo_3,axis=0)
 
@@ -70,12 +70,12 @@ a_gorro_3= final_BOX[indice]
 A_GORRO = np.array([a_gorro_1, a_gorro_2, a_gorro_3])  # También da (3, 200)
 
 #Para calcular el argumento maximo de cada realizacion
-k_1=np.argmax(final_BMH[:N//2, :],axis=0)
+k_1=np.argmax(final_BMH[:N2//2, :],axis=0)
 k_2=np.argmax(final_FLT[:N//2, :],axis=0)
 k_3=np.argmax(final_BOX[:N//2, :],axis=0)
 
 
-omega_1_1=k_1*df
+omega_1_1=k_1*df2
 omega_2=k_2*df
 omega_3=k_3*df
 
@@ -111,14 +111,16 @@ sesgo_BHK=esperanza_BHK - valor_real
 sesgo_Flat=esperanza_Flat - valor_real
 sesgo_BOX=esperanza_BOX - valor_real
 
+
 varianza_BHK=np.var(a_gorro_1)
 varianza_Flat=np.var(a_gorro_2)
 varianza_BOX=np.var(a_gorro_3)
 
+
 plt.figure(2)
-plt.hist(omega_1_1, bins=30, label='Blackman-Harris', color='red', alpha=0.6)
-plt.hist(omega_2, bins=30, label='Flattop', color='green', alpha=0.6)
-plt.hist(omega_3, bins=30, label='Boxcar', color='blue', alpha=0.6)
+plt.hist(omega_1_1, bins=30, label='Blackman-Harris', color='purple', alpha=0.6)
+#plt.hist(omega_2, bins=30, label='Flattop', color='green', alpha=0.6)
+#plt.hist(omega_3, bins=30, label='Boxcar', color='black', alpha=0.6)
 
 plt.title('Histogramas de omega (una por ventana)')
 plt.xlabel('Magnitud')
@@ -135,8 +137,3 @@ esperanza_BOX_omega_3= np.mean(omega_3)
 sesgo_BHK_omega = esperanza_BHK_omega_1 - valor_real_omega
 sesgo_Flat_omega = esperanza_Flat_omega_2 - valor_real_omega
 sesgo_BOX_omega = esperanza_BOX_omega_3 - valor_real_omega
-
-varianza_omega_1 = np.var(omega_1_1)
-varianza_omega_2 = np.var(omega_2)
-varianza_omega_3 = np.var(omega_3)
-
