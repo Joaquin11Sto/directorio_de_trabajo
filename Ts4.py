@@ -11,15 +11,6 @@ import matplotlib as mlt
 from scipy import signal
 from scipy.fft import fft, fftshift
 
-def plot_freq(Xk_fft, ffx,repes, bfrec, title, xlabel, ylabel):
-    for i in range(repes):
-        plt.plot(ffx[bfrec], 10 * np.log10(2 * np.abs(Xk_fft[bfrec, i])**2), alpha=0.5)
-    
-    plt.title(title)
-    plt.xlabel(xlabel)  
-    plt.ylabel(ylabel)
-    plt.grid()
-    
 
  
 N=1000 # Cantidad de muestras
@@ -27,7 +18,7 @@ R=200 # Realizaciones
 fs=1000 #Frecuecia de muestreo
 a1= np.sqrt(2) #Amplitud de la señal
 df=fs/N #rResolucion espectral
-tt = np.arange(0,1,1/N).reshape((N,1))# Vector de tiempo de columna N
+tt = np.arange(0,1,1/N).reshape((N,1))#Vector de tiempo de columna N
 tt = np.tile(tt, (1, R))
 Pn= 1/10 #Potencia de ruido cuantizado con 10 dB
 
@@ -116,13 +107,13 @@ varianza_Flat=np.var(a_gorro_2)
 varianza_BOX=np.var(a_gorro_3)
 
 plt.figure(2)
-plt.hist(omega_1_1, bins=30, label='Blackman-Harris', color='red', alpha=0.6)
+plt.hist(omega_1_1, bins=30, label='Blackman-Harris', color='purple', alpha=0.6)
 plt.hist(omega_2, bins=30, label='Flattop', color='green', alpha=0.6)
-plt.hist(omega_3, bins=30, label='Boxcar', color='blue', alpha=0.6)
+plt.hist(omega_3, bins=30, label='Boxcar', color='black', alpha=0.6)
 
 plt.title('Histogramas de omega (una por ventana)')
-plt.xlabel('Magnitud')
-plt.ylabel('Frecuencia')
+plt.xlabel('Argumentos maximizador')
+plt.ylabel('Repeticiones')
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
@@ -135,8 +126,3 @@ esperanza_BOX_omega_3= np.mean(omega_3)
 sesgo_BHK_omega = esperanza_BHK_omega_1 - valor_real_omega
 sesgo_Flat_omega = esperanza_Flat_omega_2 - valor_real_omega
 sesgo_BOX_omega = esperanza_BOX_omega_3 - valor_real_omega
-
-varianza_omega_1 = np.var(omega_1_1)
-varianza_omega_2 = np.var(omega_2)
-varianza_omega_3 = np.var(omega_3)
-
