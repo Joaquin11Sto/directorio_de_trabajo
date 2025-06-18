@@ -30,9 +30,9 @@ N=len(ecg_one_lead)
 N_qrs=len(altos)
 ecg_one_lead=ecg_one_lead/np.std(ecg_one_lead) # Normalizacion
 ecg_corto=ecg_one_lead[720000:740000]
-# b_gorro=sig.medfilt(ecg_corto[:,0],kernel_size=201) ## metodo de mediana
+b_gorro=sig.medfilt(ecg_corto[:,0],kernel_size=201) ## metodo de mediana
 
-# b_gorro=sig.medfilt(b_gorro,kernel_size=601)
+b_gorro=sig.medfilt(b_gorro,kernel_size=601)
 
 
 # ecg_filtro = ecg_corto - b_gorro
@@ -45,23 +45,23 @@ samples_before = 200
 samples_after = 350
 
 # Dimensiones del bloque (ventana)
-window_size = samples_before + samples_after
+# window_size = samples_before + samples_after
 
 # Lista para almacenar las ventanas
-ecg_blocks = []
+# ecg_blocks = []
 
-for i in range(len(altos)):
-    idx = altos[i, 0]  # obtener el valor del índice
-    start = idx - samples_before
-    end = idx + samples_after
+# for i in range(len(altos)):
+#     idx = altos[i, 0]  # obtener el valor del índice
+#     start = idx - samples_before
+#     end = idx + samples_after
 
-    # Verificar que no se exceda de los límites
-    if start >= 0 and end < len(ecg_one_lead):
-        window = ecg_one_lead[start:end, 0]  # sacar como vector plano
-        ecg_blocks.append(window)
+#     # Verificar que no se exceda de los límites
+#     if start >= 0 and end < len(ecg_one_lead):
+#         window = ecg_one_lead[start:end, 0]  # sacar como vector plano
+#         ecg_blocks.append(window)
 
-# Convertir la lista a array: shape (num_latidos, window_size)
-ecg_V = np.array(ecg_blocks)
+# # Convertir la lista a array: shape (num_latidos, window_size)
+# ecg_V = np.array(ecg_blocks)
 
 
 

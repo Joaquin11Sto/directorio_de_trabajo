@@ -103,7 +103,8 @@ plt.legend()
 plot_plantilla(filter_type = 'bandpass' , fpass = fpass, ripple = ripple , fstop = fstop, attenuation = attenuation, fs = fs)
 
 
-
+# %%
+# io.whosmat('ECG_TP4.mat')
 mat_struct = sio.loadmat('./ECG_TP4.mat')
 ecg_one_lead = vertical_flaten(mat_struct['ecg_lead'])
 N= len(ecg_one_lead)
@@ -119,6 +120,7 @@ y_ecg = sig.sosfiltfilt(my_sos, ecg_one_lead,axis=0)
 # plt.ylabel('Amplitud')
 # plt.grid(which='both', axis='both')
 # plt.legend()
+# %%
 
 # %%
 
